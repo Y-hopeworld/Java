@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pdt">
+	<select id="already" resultType = "Integer">
+					<!-- DB자료가 숫자로 나오니까 INTEGER -->
+	SELECT COUNT(*) FROM tbl_product
+	WHERE pname = #{pname}
+	</select>
+	
+	<update id="cntPlusPdt" parameterType = "Hashmap">
+		UPDATE tbl_product
+			SET cnt = cnt + #{cnt}
+		WHERE pname = #{pname}	
+	
+	</update>	
+	
+	<insert id="insertPdt"	parameterType = "Hashmap">
+		INSERT INTO tbl_product(pno,pname,company,price,cnt)
+		VALUES(seq_product.NEXTVAL,#{pname},#{company},#{price},#{cnt})
+	
+	</insert>	
+	
+	<delete id="deletePdt">
+		DELETE tbl_product
+		WHERE pname = #{pname}
+	</delete>
+	
+	<select id="selectPdt" resultType = "marcket.ProductDTO">
+		SELECT * FROM tbl_product
+	
+	</select>
+
+	<select id="searchPdt" resultType = "marcket.ProductDTO">
+		SELECT * FROM tbl_product
+		WHERE pname LIKE '%'||#{pname}||'%'
+	</select>
+
+	<update id="updatePdt">
+		UPDATE tbl_product
+			SET company = #{company},
+				price = #{price},
+				cnt = #{cnt}
+		WHERE pname = #{pname}		
+	</update>		
+	
+	<!-- 검색유무 -->
+	<select id="searCheck" resultType = "Integer">
+		SELECT COUNT(*) FROM tbl_product
+		WHERE pname LIKE '%'||#{pname}||'%'
+	</select>
+	
+
+</mapper>

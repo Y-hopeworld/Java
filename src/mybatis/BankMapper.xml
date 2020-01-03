@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bank">
+
+ 	<select id="selBank" resultType="problem.BankDTO">
+ 	<!--sqlsession에서 DB로 가서 SQL 실행  -->
+ 	<!--ResultSet에서 list로 바꿔서 데이터를 만들어주는  역할을 자동으로 해줌  -->
+ 		SELECT * FROM tbl_bank
+ 		ORDER BY bno
+ 	
+ 	</select>
+ 	
+ 	<select id="selectAccount" resultType="problem.BankDTO">
+ 		SELECT * FROM tbl_bank
+ 		WHERE bno = #{bno} AND pw = #{pw}
+ 	
+ 	</select>
+ 	
+ 	<!-- 계좌개설 -->
+ 	<insert id="insertBank" parameterType ="problem.BankDTO">
+ 		INSERT INTO tbl_bank(bno, bname, pw)
+ 		VALUES(seq_bank.NEXTVAL, #{bname}, #{pw})
+ 	</insert>
+ 	
+ 	<!--입금  -->
+ 	<update id="updateBank" parameterType ="problem.BankDTO" >
+ 		UPDATE tbl_bank
+		 SET money = money + #{money}
+		WHERE bno = #{bno}
+	</update>
+	
+	<!-- 계좌삭제 -->
+	<update id="deleteBank" parameterType ="HashMap" >
+		UPDATE tbl_bank
+   		SET money = money - #{money}
+		WHERE bno = #{bno}
+	</update>	 
+	
+	<!-- 동적쿼리 -->
+	<!-- +,- 만 바뀌는 경우 -->
+	<update id="changeMoney" parameterType="map">
+		UPDATE tbl_bank SET
+ 		<if test="flag == 1">
+			  money = money + #{money}
+		</if>
+
+		<if test="flag == 0">
+		 	  money = money - #{money}
+		</if>		
+		WHERE bno = #{bno}
+
+	</update>
+		
+		
+	
+	
+	
+	
+	<delete id="deleteAccount" parameterType="map">
+		DELETE FROM tbl_bank
+		WHERE bno = #{bno} AND pw = #{pw}
+	
+	</delete>
+	
+	<select id="balanceMoney" resultType = "Integer">
+		SELECT money FROM tbl_bank
+		WHERE bno = #{bno}
+	
+	</select>
+	
+	<select id="checkUser" resultType = "Integer">
+		SELECT COUNT(*) FROM tbl_bank
+		WHERE bno = #{bno} AND pw = #{pw}
+	
+	</select>
+	
+	<!-- 출금 -->
+	<delete id="minusMoney" parameterType ="HashMap">
+		UPDATE tbl_bank
+ 		  SET money = money - #{money}
+		WHERE bno = #{bno}   
+	</delete>
+	
+</mapper>

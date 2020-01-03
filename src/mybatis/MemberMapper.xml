@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+	<!--  -->
+	<select id="login" resultType = "Integer">
+		SELECT COUNT(*) FROM tbl_member
+		WHERE id = #{id} AND pw = #{pw}
+	</select>
+	
+	<!-- Type값은 DB에서 리턴해서 오는 값의 자료형 -->
+	<select id="checkid" resultType="String">
+		SELECT writer FROM tbl_board
+		WHERE bno = #{bno}
+	</select>
+
+</mapper>
