@@ -1,0 +1,217 @@
+--은행테이블
+DROP TABLE tbl_bank;
+CREATE TABLE tbl_bank(
+  bno NUMBER PRIMARY KEY,
+  bname VARCHAR2(50) NOT NULL,
+  pw VARCHAR2(50) NOT NULL,
+  money NUMBER DEFAULT 0,
+  regdate DATE DEFAULT SYSDATE
+);
+
+DROP SEQUENCE seq_bank;
+CREATE SEQUENCE seq_bank
+    START WITH 101
+    INCREMENT BY 1
+    NOCYCLE;
+    
+INSERT INTO tbl_bank(bno,bname,pw)
+VALUES(seq_bank.NEXTVAL,'김행화','1234');
+INSERT INTO tbl_bank(bno,bname,pw)
+VALUES(seq_bank.NEXTVAL,'정우영','4567');
+INSERT INTO tbl_bank(bno,bname,pw)
+VALUES(seq_bank.NEXTVAL,'김예슬','7890');
+INSERT INTO tbl_bank(bno,bname,pw)
+VALUES(seq_bank.NEXTVAL,'나솔애','1111');
+INSERT INTO tbl_bank(bno,bname,pw)
+VALUES(seq_bank.NEXTVAL,'양시윤','2222');
+
+COMMIT;
+SELECT * FROM tbl_bank;
+
+-- 게시판 테이블
+DROP TABLE tbl_board;
+CREATE TABLE tbl_board(
+    bno NUMBER PRIMARY KEY,  
+    title VARCHAR2(200) NOT NULL,
+    content VARCHAR2(500) NOT NULL,
+    writer VARCHAR2(100) NOT NULL,
+    viewcnt NUMBER DEFAULT 0, -- 최초 게시글 등록시 조회수 0부터 시작
+    regdate DATE DEFAULT SYSDATE
+);
+CREATE SEQUENCE seq_board
+    START WITH 1
+    INCREMENT BY 1
+    NOCYCLE;
+    
+
+SELECT * FROM tbl_board;
+
+--1. 등록
+INSERT INTO tbl_board(bno,title,content,writer)
+VALUES(seq_board.NEXTVAL,'본보야지 4 봄?','너무 귀여워','아미1');
+INSERT INTO tbl_board(bno,title,content,writer)
+VALUES(seq_board.NEXTVAL,'태형아','생일축하해','윈터베어');
+INSERT INTO tbl_board(bno,title,content,writer)
+VALUES(seq_board.NEXTVAL,'구오즈 우정목걸리','어느 브랜드꺼인가요','구오즈만세');
+INSERT INTO tbl_board(bno,title,content,writer)
+VALUES(seq_board.NEXTVAL,'2020윈터패키지','역대급화보임','스프링패키지원함');
+INSERT INTO tbl_board(bno,title,content,writer)
+VALUES(seq_board.NEXTVAL,'내년 한콘하냐','빅힛 제발 일해라','아미총연합');
+
+
+
+-- 2.수정
+UPDATE tbl_board
+    SET title = '본보 시즌4',
+        content = '미치도록 귀엽다',
+        writer = '월드스타BTS'
+WHERE bno = 1;    
+
+COMMIT;
+SELECT * FROM tbl_board;
+
+--3.삭제
+DELETE tbl_board
+WHERE bno = 5;
+
+SELECT * FROM tbl_board;
+
+ROLLBACK;
+
+--4.전체조회
+SELECT * FROM tbl_board;
+
+
+--5. title과 content에서 '윈'글자 검색
+SELECT * FROM tbl_board
+WHERE title LIKE '%윈%' OR
+content  LIKE '%윈%';
+
+--6.오름차순 정렬
+SELECT * FROM tbl_board
+ORDER BY viewcnt DESC;
+
+--7.게시물 번호로 조회( 상세게시글)
+SELECT * FROM  tbl_board
+WHERE bno = 1;
+
+--조회수 증가
+UPDATE tbl_board
+    SET viewcnt = viewcnt + 1
+WHERE bno = 1;    
+
+--멤버 테이블
+CREATE TABLE tbl_member(
+    id VARCHAR2(50) PRIMARY KEY,
+    pw VARCHAR2(100) NOT NULL,
+    name VARCHAR2(100) NOT NULL,
+    phone VARCHAR2(100) NOT NULL,
+    regdate DATE DEFAULT SYSDATE
+);
+
+INSERT INTO tbl_member(id,pw,name,phone)
+VALUES('LoveRM','0912','김남준','010-2018-1022');
+INSERT INTO tbl_member(id,pw,name,phone)
+VALUES('eatjin','1204','김석진','010-2019-0605');
+INSERT INTO tbl_member(id,pw,name,phone)
+VALUES('AgustD','0309','민윤기','010-2016-0815');
+INSERT INTO tbl_member(id,pw,name,phone)
+VALUES('hopeworld','0218','정호석','010-2018-0301');
+INSERT INTO tbl_member(id,pw,name,phone)
+VALUES('fairyJ','1013','박지민','010-2013-0618');
+INSERT INTO tbl_member(id,pw,name,phone)
+VALUES('winterbear','1230','김태형','010-2018-0809');
+INSERT INTO tbl_member(id,pw,name,phone)
+VALUES('goldbaby','0901','전정국','010-2013-0613');
+
+COMMIT;
+
+-- 수정
+UPDATE tbl_member
+    SET id = 'RainRM'
+WHERE name = '김남준';    
+
+UPDATE tbl_member
+    SET phone = '010-2019-0809'
+WHERE name = '김태형';    
+
+-- 로그인 할 떄 아이디와 비밀번호가 맞는 것을 찾음
+SELECT * FROM tbl_member
+WHERE id = 'RainRM' AND pw = '0912';
+
+--로그인 유무만 알려고 함, 값을 전달 받으려는 것이 아니기 때문에 COUNT 사용
+SELECT COUNT(*) FROM tbl_member
+WHERE id = 'hopeworld' AND pw = '0218';
+
+SELECT writer FROM tbl_board
+WHERE bno = 2;
+
+SELECT * FROM tbl_member;
+
+-- 편의점테이블
+DROP TABLE tbl_product;
+CREATE TABLE tbl_product(
+    pno NUMBER PRIMARY KEY,
+    pname VARCHAR2(100) NOT NULL,
+    company VARCHAR2(100) NOT NULL,
+    price NUMBER DEFAULT 0,
+    cnt NUMBER DEFAULT 0,
+    regdate DATE DEFAULT 0 SYSDATE
+);
+
+DROP SEQUENCE seq_product;
+CREATE SEQUENCE seq_product
+    START WITH 1001
+    INCREMENT BY 1
+    NOCYCLE;
+    
+    
+SELECT * FROM tbl_product;
+
+--2.제품등록
+INSERT INTO tbl_product(pno,pname,company,price,cnt)
+VALUES(seq_product.NEXTVAL,'에이스초콜라또',해태,4800,30);
+INSERT INTO tbl_product(pno,pname,company,price,cnt)
+VALUES(seq_product.NEXTVAL,'마가렛트','롯데',4000,11);
+INSERT INTO tbl_product(pno,pname,company,price,cnt)
+VALUES(seq_product.NEXTVAL,'스프라이트','코카콜라',1500,20);
+INSERT INTO tbl_product(pno,pname,company,price,cnt)
+VALUES(seq_product.NEXTVAL,'팔도비빔면','팔도',3500,35);
+
+COMMIT;
+
+--3.제품수정
+UPDATE tbl_product
+    SET company = 'paldo',
+        price = 4000,
+        cnt = 40
+WHERE pname = '팔도비빔면'
+
+COMMIT;
+SELECT * FROM tbl_product;
+
+--4. 제품삭제
+DELETE tbl_product
+WHERE pname= '마가렛트';
+
+--5. 제품조회
+SELECT * FROM tbl_product;
+
+--6. 제품검색
+SELECT * FROM tbl_product
+WHERE pname LIKE '%마%';
+
+SELECT COUNT(*) FROM tbl_product
+WHERE pname LIKE '%오%';
+
+SELECT COUNT(*) FROM tbl_product
+WHERE pname LIKE '%마%';
+
+
+
+
+
+
+
+
+
