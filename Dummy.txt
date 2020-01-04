@@ -209,6 +209,20 @@ WHERE pname LIKE '%마%';
 
 
 
+-- 매출 테이블 
+DROP TABLE tbl_sale;
+CREATE TABLE tbl_sale(
+    sno NUMBER PRIMARY KEY,
+    sname VARCHAR2(100) NOT NULL,
+    cnt NUMBER NOT NULL,
+    tprice NUMBER NOT NULL,
+    regdate DATE DEFAULT SYSDATE
+);
+
+CREATE SEQUENCE seq_sale
+    START WITH 1001
+    INCREMENT BY 1
+    NOCYCLE;
 
 
 
