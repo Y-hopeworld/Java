@@ -156,7 +156,7 @@ CREATE TABLE tbl_product(
     company VARCHAR2(100) NOT NULL,
     price NUMBER DEFAULT 0,
     cnt NUMBER DEFAULT 0,
-    regdate DATE DEFAULT 0 SYSDATE
+    regdate DATE DEFAULT  SYSDATE
 );
 
 DROP SEQUENCE seq_product;
