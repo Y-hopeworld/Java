@@ -227,5 +227,21 @@ CREATE SEQUENCE seq_sale
 
 
 
+DELETE tbl_sale
+WHERE sno = 1001;
+
+--매출
+INSERT INTO tbl_sale(sno,sname,cnt,tprice)
+VALUES(SEQ_SALE.nextval,'팔도비빔면',3,3800*3);
+
+DELETE tbl_sale
+WHERE sno = 1002;
+
+COMMIT;
+
+SELECT * FROM tbl_sale;
+
+
+
 
 
