@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mybatis.SaleMapper.xml">
+
+<!--매출내역추가  -->
+<insert id="pdtList" parameterType="HashMap">
+	INSERT INTO tbl_sale(sno,sname,cnt,tprice)
+	VALUES(seq_sale.NEXTVAL,#{sname}, #{cnt}, #{tprice})
+
+</insert>
+
+
+<!-- 일일매출현황조회  -->
+<select id="selectSales" resultType="marcket.SaleDTO">
+	SELECT * FROM tbl_sale
+
+</select>
+
+
+
+</mapper>

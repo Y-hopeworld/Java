@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mybatis.ProductMapper.xml">
+
+
+<!-- 제품판별  -->
+<select id="pdtalready" resultType="Integer">
+		SELECT COUNT(*) FROM tbl_product
+		WHERE pname = #{pname}
+</select>
+	
+	
+<!-- 기존제품추가 -->
+<update id="cntPlusPdt" parameterType="HashMap">
+		UPDATE tbl_product
+			SET cnt = cnt + #{cnt}
+</update>
+
+<!-- 2-2 새제품 등록 -->
+<insert id="insertPdt" parameterType = "HashMap">
+		INSERT INTO tbl_product(pno,pname,company,price,cnt)
+		VALUES(seq_product.NEXTVAL,#{pname},#{company},#{price},#{cnt})
+</insert>
+		
+<!-- 3. 제품수정 -->
+<update id="updatePdt" parameterType ="HashMap">
+	UPDATE tbl_product
+		SET company = #{company},
+			price = #{price},
+			cnt = #{cnt}
+	WHERE pname = #{pname}		
+</update>		
+
+<!-- 4. 제품삭제 -->
+<delete id="deletePdt">
+	DELETE tbl_product
+	WHERE pname = #{pname}
+</delete>
+
+<!-- 5. 전체제품조회 -->
+<select id="selectPdt" resultType="marcket.ProductDTO">
+	SELECT * FROM tbl_product
+</select>
+	
+<!-- 6. 제품검색 -->
+<select id="searchPdt" resultType="marcket.ProductDTO">
+	SELECT * FROM tbl_product
+	WHERE pname LIKE '%'||#{pname}||'%'
+</select>	
+
+<!-- 6-1 제품 검색시 없는 제품일 경우  -->
+<select id="searCheck" resultType="Integer">
+	SELECT COUNT(*) FROM tbl_product
+	WHERE pname LIKE '%'||#{pname}||'%'
+</select>
+
+<!-- 재고가 0인지 확인 -->
+<select id="zeroPdt" resultType="marcket.ProductDTO">
+	SELECT * FROM tbl_product
+	WHERE cnt > #{cnt}
+</select>
+
+<!-- 판매한 제품재고 빼기 -->
+<update id="salePdt" parameterType="HashMap">
+	UPDATE tbl_product
+		SET cnt = cnt - #{cnt}
+	WHERE pno = #{pno}	
+</update>
+
+<!-- 가격조회 -->
+<select id="pricePdt" resultType = "Integer">
+	SELECT price FROM tbl_product
+	WHERE pno = #{pno} 
+</select>
+
+
+</mapper>
