@@ -45,9 +45,9 @@ public class ProductDAO {
 						HashMap<String,Object> map = new HashMap<>();
 						map.put("pname", pname);
 						map.put("cnt", cnt);
-			
+						map.put("flag","plus");
 						
-						result = sqlSession.update("cntPlusPdt",map);
+						result = sqlSession.update("pdt.cntchange",map);
 						
 						
 						if(result > 0) {
@@ -212,6 +212,67 @@ public class ProductDAO {
 				return result;
 		}
 		
+		
+		// 제품 전체조회(재고가>1)
+		public List<ProductDTO> selectUsePdt() {
+				sqlSession = sqlSessionFactory.openSession();
+					try {
+							list = sqlSession.selectList("pdt.selectUsePdt");
+							printList(list);
+							
+							
+					} catch (Exception e) {
+						e.printStackTrace();
+					}finally {
+						sqlSession.close();
+					}
+			
+					return list;
+		}
+
+		//출력
+		private void printList(List<ProductDTO> list) {
+			int i = 1;
+			System.out.println("제품번호 \t  제품 이름 \t 회사 \t 가격 \t 수량 \t 재고일자");
+			
+			for (ProductDTO line : list) {
+					System.out.println(i +"\t"  + line.toString() );
+					i+= 1;
+			}
+			
+			System.out.println("제품은 총"+list.size()+"개 입니다");
+			
+		}
+
+	
+		// 상품판매시 재고 -
+		// main에서는 sname 이라 썼는데, 여기서 pname라고 써도  되는가?
+		// → Y. 값을 들어오는 순서로 받기 때문에 변수명은 달라도 상관없다.
+		public void cntminusPdt(String pname,int cnt) {
+			
+			
+			
+			sqlSession = sqlSessionFactory.openSession(true);
+			
+			HashMap<String,Object> map = new HashMap<>();
+			map.put("pname", pname);
+			map.put("cnt", cnt);
+			map.put("flag", "minus");
+			
+			
+			try {
+					result= sqlSession.update("pdt.cntchange",map);
+					
+				
+			} catch (Exception e) {
+					e.printStackTrace();
+			}finally {
+				sqlSession.close();
+			}
+			
+			
+		}
+
 		
 		
 }

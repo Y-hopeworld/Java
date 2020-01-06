@@ -1,5 +1,7 @@
 package marcket;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class MarcketMain {
@@ -13,8 +15,10 @@ public class MarcketMain {
 	public static void main(String[] args) {
 
 				Scanner sc = new Scanner(System.in);
+				List<ProductDTO> list;
 				ProductDAO pDao = new ProductDAO();
 				MarcketMain mm = new MarcketMain();
+				SaleDAO sDao = new SaleDAO();
 				Boolean flag = false;
 				int code = 0;
 				String pname;
@@ -68,14 +72,66 @@ public class MarcketMain {
 						// 1. 제품판매
 						//  판매된 제품이름 , 수량을 - , 가격을 매출로 빼는 작업
 						if(code == 1) { 
-						
+							System.out.println("구매하고 싶은 제품의 번호와 수량을 입력해주세요.");
 							
+							//재고액이 있는 제품  
+							list = pDao.selectUsePdt();
+							int cnt = 0;
+							int tprice = 0;
+							String sname= "";
+				
+						while(true) {
+							System.out.print("구매번호 >>");
+							int buyCode = sc.nextInt();
+							
+							System.out.print("구매할 수량>>");
+							cnt = sc.nextInt();
+				
+							//판매하려는 제품명
+							sname = list.get(buyCode-1).getPname();
+							
+							// 사용자가 구매하려는 제품 1개 가격
+							int price = list.get(buyCode-1).getPrice();
+							
+							// 총가격 = 1개가격 x 구매수량
+							tprice = price * cnt;
+							
+							// 현재제품 재고량
+							int nowCnt = list.get(buyCode-1).getCnt();
+							
+							if(nowCnt >= cnt) {
+									break;
+							}else {
+								System.out.println("[Msg].");
+							
+							}
+							
+						}
+							
+							
+							
+							//tbl_sale  판매한 기록을 저장(판매 제품명, 수량, 총가격)
+							HashMap<String, Object> map = new HashMap<>();
+							map.put("sname", sname);
+							map.put("cnt", cnt);
+							map.put("tprice", tprice);
+							int result = sDao.insertSale(map);
+							
+							if(result>0) {
+									// tbl_product에서 재고를 마이너스
+									pDao.cntminusPdt(sname,cnt);
+							}else {
+								System.out.println("☺︎☺︎[MSG] Login denied.");
+								
+							}
+							
+				
 						//2. 제품등록 & 추가
 						}else if(code == 2) {
 							System.out.println("제품이름을 입력해주세요");
 							System.out.print("제품이름>>");
 							sc.nextLine();
-							 pname =sc.nextLine();
+							pname =sc.nextLine();
 							
 							if(pDao.pdtAlready(pname)) {
 								// 기존에 등록된 제품임으로 추가(UPDATE)기능
@@ -159,6 +215,7 @@ public class MarcketMain {
 							sc.nextLine();
 							keyword = sc.nextLine();
 							
+							// 검색할 단어 여부
 							int check = pDao.searCheck(keyword);
 							
 							
@@ -170,7 +227,10 @@ public class MarcketMain {
 							
 						// 7. 일일 매출현황	
 						}else if(code == 7) {
-						
+							
+							System.out.println("일일 매출 현황입니다.");
+							sDao.dashBoard();
+							
 							
 						// 8.프로그램 종료
 						}else if(code == 8) {
