@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pdt">
-	<select id="already" resultType = "Integer">
+	<select id="already" resultType="Integer">
 					<!-- DB자료가 숫자로 나오니까 INTEGER -->
 	SELECT COUNT(*) FROM tbl_product
 	WHERE pname = #{pname}
 	</select>
 	
-	<update id="cntPlusPdt" parameterType = "Hashmap">
-		UPDATE tbl_product
-			SET cnt = cnt + #{cnt}
+	<!-- 동적쿼리 -->
+	<update id="cntchange" parameterType="Hashmap">
+		UPDATE tbl_product SET 
+		<if test="flag == 'plus'">
+			cnt = cnt + #{cnt}
+		</if>	
+		
+		<if test ="flag == 'minus'">
+			cnt = cnt - #{cnt}
+		</if>
 		WHERE pname = #{pname}	
 	
 	</update>	
 	
-	<insert id="insertPdt"	parameterType = "Hashmap">
+	<insert id="insertPdt"	parameterType="Hashmap">
 		INSERT INTO tbl_product(pno,pname,company,price,cnt)
 		VALUES(seq_product.NEXTVAL,#{pname},#{company},#{price},#{cnt})
 	
@@ -49,5 +56,9 @@
 		WHERE pname LIKE '%'||#{pname}||'%'
 	</select>
 	
-
+	<select id="selectUsePdt" resultType = "ProductDTO">
+		SELECT * FROM tbl_product
+		WHERE cnt >=1 
+		
+	</select>
 </mapper>

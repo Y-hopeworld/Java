@@ -7,6 +7,11 @@
 <!-- resource에 db.properties에 있는 데이터를 넣어주기  -->
 <properties resource = "mybatis/db.properties"/>
 
+<typeAliases>
+<typeAlias alias="BoardDTO" type= "board.BoardDTO"/>
+<typeAlias alias="ProductDTO" type="marcket.ProductDTO"/>
+<typeAlias alias="SaleDTO" type="marcket.SaleDTO"/>
+</typeAliases>
 
 
   <environments default="development">
@@ -27,5 +32,6 @@
     <mapper resource="mybatis/BoardMapper.xml"/>
   	<mapper resource="mybatis/MemberMapper.xml"/>
   	<mapper resource="mybatis/ProductMapper.xml"/>
+  	<mapper resource="mybatis/SaleMapper.xml"/>
   </mappers>
 </configuration>
