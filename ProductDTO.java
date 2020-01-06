@@ -36,27 +36,6 @@ public class ProductDTO {
 		this.cnt = cnt;
 		this.regdate = regdate;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	public ProductDTO(String pname, int price, int cnt) {
-		super();
-		this.pname = pname;
-		this.price = price;
-		this.cnt = cnt;
-	}
-
-
-
 
 	public int getPno() {
 		return pno;

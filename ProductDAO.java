@@ -6,29 +6,23 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import mybatis.SqlMapContig;
-
-
-
-
+import mybatis.SqlMapConfig;
 
 public class ProductDAO {
 
-		SqlSessionFactory sqlSessionFactory = SqlMapContig.getSqlSession();
+		SqlSessionFactory sqlSessionFactory = SqlMapConfig.getSqlSession();
+		
 		SqlSession sqlSession;
 		int result;
 		List<ProductDTO> list;
-		List<SaleDTO> list2;
 		Boolean flag = false; // default값은 false
-	
 		
-
 		// 제품 등록 & 추가 기능 작동시 기존에 등록된 제품인지 최초 입고 제품인지 판별
 		public boolean pdtAlready(String name) {
 			sqlSession = sqlSessionFactory.openSession();
 				try {
 					// DB에 자료 한건만 뜨니까 selectOne
-					result = sqlSession.selectOne("pdtalready",name);
+					result = sqlSession.selectOne("pdt.already",name);
 					// 결과: mapper로 가서 실행후 DB에서 자료를 가지고 리턴해서 옴
 					if(result>0) {
 						flag = true;
@@ -42,41 +36,7 @@ public class ProductDAO {
 				return flag;
 		}
 		
-		//1. 제품판매 후 재고액 빼기
-		public void salePdt(int pno, int cnt) {
-				
-				sqlSession = sqlSessionFactory.openSession(true);
-				
-					try {
-							HashMap<String,Integer> map = new HashMap<>();
-							map.put("pno",pno);
-							map.put("cnt", cnt);
-							
-							result = sqlSession.update("salePdt",map);
-							
-							if(result>0) {
-								System.out.println(pno+" 제품의 "+ cnt + "개가 판매 되었습니다");
-								
-							}else {
-								System.out.println("판매에 실패했습니다. ");
-								
-							}
-							
-							
-							
-					} catch (Exception e) {
-						e.printStackTrace();
-					}finally {
-						sqlSession.close();
-					}
-							
-					
-				
-			
-			
-		}
-		
-		
+
 		// 2-1 기존제품 추가
 		public void cntPlusPdt(String pname, int cnt) {
 				sqlSession = sqlSessionFactory.openSession(true);
@@ -85,9 +45,9 @@ public class ProductDAO {
 						HashMap<String,Object> map = new HashMap<>();
 						map.put("pname", pname);
 						map.put("cnt", cnt);
-			
+						map.put("flag","plus");
 						
-						result = sqlSession.update("cntPlusPdt",map);
+						result = sqlSession.update("pdt.cntchange",map);
 						
 						
 						if(result > 0) {
@@ -229,86 +189,90 @@ public class ProductDAO {
 			
 		}
 		
-		
+		//7. 일일매출 현황
+		public void salesPdt() {}
 
+		
 		//검색 유무기능
 		public int searCheck(String keyword) {
 			
 			sqlSession = sqlSessionFactory.openSession();
-			try {
-				result = sqlSession.selectOne("searCheck",keyword);
-				
-				
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}finally {
-				sqlSession.close();
-			}
-			
-			
-			return result;
-		}
-		
-		
-		// 재고가 있는 상품을 조회
-		public void zeroPdt() {
-			sqlSession = sqlSessionFactory.openSession();
-				
 				try {
-						
-						list = sqlSession.selectList("zeroPdt",0);
-						
-						for (ProductDTO line : list) {
-							System.out.println(line.toString());
-							
-						}
-						
+						result = sqlSession.selectOne("searCheck",keyword);
 						
 					
-					
+						
 				} catch (Exception e) {
 					e.printStackTrace();
 				}finally {
 					sqlSession.close();
 				}
 				
-		}
-		
-		// 제품 가격 조회
-		public int pricePdt(int pno) {
-
-		sqlSession = sqlSessionFactory.openSession();
-			
-				try {
-						result = sqlSession.selectOne("pricePdt",pno);
-						
-						if(result>0) {
-									System.out.println(result);
-						}else {
-							System.out.println("가격을 알 수 없습니다.");
-						}
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					sqlSession.close();
-				}
 				
-			return result;
+				return result;
+		}
+		
+		
+		// 제품 전체조회(재고가>1)
+		public List<ProductDTO> selectUsePdt() {
+				sqlSession = sqlSessionFactory.openSession();
+					try {
+							list = sqlSession.selectList("pdt.selectUsePdt");
+							printList(list);
+							
+							
+					} catch (Exception e) {
+						e.printStackTrace();
+					}finally {
+						sqlSession.close();
+					}
+			
+					return list;
+		}
+
+		//출력
+		private void printList(List<ProductDTO> list) {
+			int i = 1;
+			System.out.println("제품번호 \t  제품 이름 \t 회사 \t 가격 \t 수량 \t 재고일자");
+			
+			for (ProductDTO line : list) {
+					System.out.println(i +"\t"  + line.toString() );
+					i+= 1;
+			}
+			
+			System.out.println("제품은 총"+list.size()+"개 입니다");
+			
+		}
+
+	
+		// 상품판매시 재고 -
+		// main에서는 sname 이라 썼는데, 여기서 pname라고 써도  되는가?
+		// → Y. 값을 들어오는 순서로 받기 때문에 변수명은 달라도 상관없다.
+		public void cntminusPdt(String pname,int cnt) {
+			
+			
+			
+			sqlSession = sqlSessionFactory.openSession(true);
+			
+			HashMap<String,Object> map = new HashMap<>();
+			map.put("pname", pname);
+			map.put("cnt", cnt);
+			map.put("flag", "minus");
+			
+			
+			try {
+					result= sqlSession.update("pdt.cntchange",map);
+					
+				
+			} catch (Exception e) {
+					e.printStackTrace();
+			}finally {
+				sqlSession.close();
+			}
+			
+			
 		}
 
 		
 		
-		
-							
-						
-							
-	
-		
-
-
-
 }
-
-

@@ -6,77 +6,78 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import mybatis.SqlMapContig;
+import mybatis.SqlMapConfig;
 
 public class SaleDAO {
-	
-	SqlSessionFactory sqlSessionFactory = SqlMapContig.getSqlSession();
-	
-	SqlSession sqlSession;
-	
+
+	// 판매관련 클래스 DAO
+	SqlSessionFactory sqlSessionFactory = SqlMapConfig.getSqlSession();
+	SqlSession sqlSession ;
+	int result;
 	List<SaleDTO> list;
 	
-	int result;
+	int cnt=0;
+	int price=0; 
 	
-	
-	
-	
-	// 1-1 제품계산
-			public void pdtList(String sname, int cnt, int tprice) {
+	public int insertSale(HashMap<String, Object> map) {
+		sqlSession = sqlSessionFactory.openSession(true);
+			
+			try {
+					result = sqlSession.insert("sale.insertSale",map);
 				
-					sqlSession= sqlSessionFactory.openSession(true);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				sqlSession.close();
+			}
+			return result;
+			
+	}
+	
+	// 일일 판매량 출력하는 함수
+	public void dashBoard() {
+			sqlSession = sqlSessionFactory.openSession();
+		
+			try {
+					list = sqlSession.selectList("dashBoard");
+					int i = 0;
+					System.out.println("번호 \t 제품명 \t 판매수량 \t 가격");
 					
-						try {	
-								HashMap<String,Object> map = new HashMap<>();
-								map.put("sname", sname);
-								map.put("cnt", cnt);
-								map.put("tprice", tprice);
-								
-								result = sqlSession.insert("pdtList",map);
-								
-								if(result>0) {
-											System.out.println("총 가격은 " + tprice +"원 입니다.");
-								}else {
-										System.out.println("잘못된 경로입니다. 다시 입력해주세요");
-								}
-								
-								
-								
-							
-						} catch (Exception e) {
-							e.printStackTrace();
-						}finally {
-							sqlSession.close();
-						}
+					for (SaleDTO line : list) {
+						System.out.print((i+1)+"\t");
+						System.out.print(line.getSname() + "\t");
+						System.out.print(line.getCnt() + "\t");
+						System.out.println(line.getTprice() + "\t");
+						cnt += list.get(i).getCnt();
+						price += list.get(i).getTprice();
+						i+=1;
+					}
 						
+					System.out.println("오늘 판매한 제품은  총"+ list.size()+"종류, 총"+cnt+"개, 판매액"+ price+ "원입니다.");
+						
+						
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				sqlSession.close();
 			}
 			
-			
-			
-			//7. 일일매출 현황
-			public void selectSales() {
+	}
 					
-					sqlSession= sqlSessionFactory.openSession();
-						
-						try {
-								list = sqlSession.selectList("selectSales");
-							
-								for (SaleDTO line : list) {
-									
-									System.out.println(line.toString());
-									
-								}
-							
-						} catch (Exception e) {
-							e.printStackTrace();
-						}finally {
-							sqlSession.close();
-						}
-					
-				
-			}
-			
-			
-	
 	
 }
+					
+					
+					
+					
+					
+					
+				
+				
+	
+	
+	
+	
+	
+	
