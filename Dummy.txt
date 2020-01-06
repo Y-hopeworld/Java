@@ -266,4 +266,232 @@ GROUP BY sname;
 
 
 
+DROP TABLE EMP;
+DROP TABLE DEPT;
+DROP TABLE BONUS;
+DROP TABLE SALGRADE;
+DROP TABLE DUMMY;
+ 
+CREATE TABLE EMP
+       (EMPNO NUMBER(4) PRIMARY KEY,
+        ENAME VARCHAR2(10),
+        JOB VARCHAR2(9),
+        MGR NUMBER(4),
+        HIREDATE DATE,
+        SAL NUMBER(7, 2),
+        COMM NUMBER(7, 2),
+        DEPTNO NUMBER(2));
+ 
+INSERT INTO EMP VALUES
+        (7369, 'SMITH',  'CLERK',     7902,
+        sysdate,  800, NULL, 20);
+         
+INSERT INTO EMP VALUES
+        (7499, 'ALLEN',  'SALESMAN',  7698,
+        sysdate, 1600,  300, 30);
+         
+INSERT INTO EMP VALUES
+        (7521, 'WARD',   'SALESMAN',  7698,
+        sysdate, 1250,  500, 30);
+         
+INSERT INTO EMP VALUES
+        (7566, 'JONES',  'MANAGER',   7839,
+        sysdate,  2975, NULL, 20);
+         
+INSERT INTO EMP VALUES
+        (7654, 'MARTIN', 'SALESMAN',  7698,
+        sysdate, 1250, 1400, 30);
+         
+INSERT INTO EMP VALUES
+        (7698, 'BLAKE',  'MANAGER',   7839,
+        sysdate,  2850, NULL, 30);
+         
+INSERT INTO EMP VALUES
+        (7782, 'CLARK',  'MANAGER',   7839,
+        sysdate,  2450, NULL, 10);
+INSERT INTO EMP VALUES
+        (7788, 'SCOTT',  'ANALYST',   7566,
+        sysdate, 3000, NULL, 20);
+         
+INSERT INTO EMP VALUES
+        (7839, 'KING',   'PRESIDENT', NULL,
+        sysdate, 5000, NULL, 10);
+         
+INSERT INTO EMP VALUES
+        (7844, 'TURNER', 'SALESMAN',  7698,
+        sysdate,  1500,    0, 30);
+         
+INSERT INTO EMP VALUES
+        (7876, 'ADAMS',  'CLERK',     7788,
+        sysdate, 1100, NULL, 20);
+         
+INSERT INTO EMP VALUES
+        (7900, 'JAMES',  'CLERK',     7698,
+        sysdate,   950, NULL, 30);
+         
+INSERT INTO EMP VALUES
+        (7902, 'FORD',   'ANALYST',   7566,
+        sysdate,  3000, NULL, 20);
+         
+INSERT INTO EMP VALUES
+        (7934, 'MILLER', 'CLERK',     7782,
+        sysdate, 1300, NULL, 10);
+ 
+CREATE TABLE DEPT
+       (DEPTNO NUMBER(2) PRIMARY KEY,
+        DNAME VARCHAR2(14),
+        LOC VARCHAR2(13) );
+ 
+INSERT INTO DEPT VALUES (10, 'ACCOUNTING', 'NEW YORK');
+INSERT INTO DEPT VALUES (20, 'RESEARCH',   'DALLAS');
+INSERT INTO DEPT VALUES (30, 'SALES',      'CHICAGO');
+INSERT INTO DEPT VALUES (40, 'OPERATIONS', 'BOSTON');
+ 
+CREATE TABLE BONUS
+        (ENAME VARCHAR2(10),
+         JOB   VARCHAR2(9),
+         SAL   NUMBER,
+         COMM  NUMBER);
+ 
+CREATE TABLE SALGRADE
+        (GRADE NUMBER,
+         LOSAL NUMBER,
+         HISAL NUMBER);
+ 
+INSERT INTO SALGRADE VALUES (1,  700, 1200);
+INSERT INTO SALGRADE VALUES (2, 1201, 1400);
+INSERT INTO SALGRADE VALUES (3, 1401, 2000);
+INSERT INTO SALGRADE VALUES (4, 2001, 3000);
+INSERT INTO SALGRADE VALUES (5, 3001, 9999);
+ 
+CREATE TABLE DUMMY
+        (DUMMY NUMBER);
+ 
+INSERT INTO DUMMY VALUES (0);
+ 
+COMMIT;
+
+SELECT * FROM emp;
+
+--Join 
+
+--사원내용
+SELECT * FROM emp; -- detpno : FK키
+--부서내용
+SELECT * FROM dept; -- detpno:PK키
+
+SELECT *
+FROM dept, emp
+WHERE dept.deptno = emp.deptno;
+
+SELECT *
+FROM dept, emp
+WHERE dept.deptno = emp.deptno;
+
+
+--JOIN 종류
+--1.Equi Join(동등조인)
+-- 양쪽 테이블에 값이 있어야 작동, 한곳에라도 값이 없으면 결과가 나오지 않음
+-- ex) dept테이블과 emp 테이블을 조인
+
+SELECT emp.empno, emp.ename as 사원이름, dept.dname
+FROM dept, emp 
+WHERE dept.deptno = emp.deptno;
+
+--ALIAS
+SELECT e.empno, e.ename as 사원이름, d.dname
+FROM dept d, emp e
+WHERE d.deptno = e.deptno;
+
+--2.Inner Join == Equi Join
+--ex) dept테이블과 emp 테이블을 Inner조인
+-- , 대신에 Inner Join을 사용 (Inner 생략 가능)
+-- WHERE절이 ON절 → JOIN의 조건
+SELECT e.empno, e.ename, d.dname
+FROM dept d
+INNER JOIN emp e
+ON d.deptno = e.deptno;
+
+-- 3. Natural Join == Equi Join 
+--ex) dept테이블과 emp 테이블을 Natural조인
+-- 동일한 컬럼을 내부적으로 모두 조인, ON절(동등조건)이 생략가능
+SELECT e.empno , e.ename , d.dname
+FROM dept d
+NATURAL JOIN emp e;
+--Using(deptno); 동일한 이름을 가지는 컬럼은 모두 조인 됨으로 Using을 사용하면 컬럼을 선택해서 조인 가능
+
+--4. Non-Equi Join
+-- 테이블의 어떤 컬럼도 Join 할 테이블의 컬럼과 일치하지 않을 때
+-- 조인조건은 동등(=) 이외의 연산자를 사용합니다
+-- BETWEEN AND, IS NULL, IS NOT NULL,IN,NOT IN
+-- 거의 사용하지않는다 
+
+--연봉 등급: 등급별 연봉최저액 ~ 최고액
+SELECT * FROM salgrade; 
+--ex) emp테이블과 salgrade테이블의 Non-Equi Join
+SELECT e.ename, e.sal, s.grade
+FROM emp e, salgrade s
+WHERE e.sal
+BETWEEN s.losal
+AND s.hisal;
+
+--5. Self Join
+-- Equi Join과 같으나 하나의 테이블에서 조인이 일어난다는 것이 다르다
+-- 같은 테이블에 대해 두개의 alias를 사용하여, FROM 절에 두개의 테이블 사용하는 것처럼 조인한다.
+-- ex)사원의 매니저이름을 조회하는 Self Join
+SELECT e.ename, a.ename as Manager
+FROM emp e, emp a
+WHERE e.empno = a.mgr;
+SELECT * FROM emp;
+
+-- ※.Cartesian Product
+-- 컬럼을 곱해서 모든 경우의 수를 띄워주는 것
+-- 검색하고자했던 데이터뿐 아니라 조인에 사용된 테이블들의 모든 데이터가 반환되는 현상
+-- Cartesian Product 는 조인 조건을 정의하지 않은 경우 발생
+-- CROSS JOIN을 사용하면 Cartesian Product 값을 얻을 수 있음
+-- ex) CROSS JOIN 절을 이용하여 Cartesian Product 값을 얻는 예제
+SELECT e.empno, e.ename, d.dname
+FROM dept d CROSS JOIN emp e;
+-- emp 14개 dept 14개 → 14 x 4 = 56건 출력
+
+--7. Outer Join
+--한쪽에 값이 없더라도 값이 나오게 해주는 것
+--Equi Join은 조인을 생성하려는 두 개의 테이블의 한쪽 컬럼에서 값이 없다면 데이터를 반환하지 못함
+--동일 조건에서 조인 조건을 만조갛는 값이 없는 행등르 조회하기 위해 Outer Join 을 사용
+--Outer Join 연산자는 (+)이다
+--조인시 값이 없는 조인측에 (+)를 위치 시킨다
+--Outer Join 연산자는 표현식의 한편에만 올 수 있다.
+--ex) Equi Join과 Outer Join의 비교
+-- ex1) Equi Join으로 부서번호를 조회
+SELECT DISTINCT(e.deptno), d.deptno, d.dname
+FROM emp e, dept d
+WHERE e.deptno = d.deptno;
+ 
+--ex)  Outer Join으로 부서번호를 조회
+-- e.deptno(+) : emp의 deptno테이블에서 값이 없어도 출력해주세요
+SELECT DISTINCT(e.deptno), d.deptno, d.dname
+FROM emp e,dept d
+WHERE e.deptno(+) = d.deptno;
+
+--ex3) LEFT OUTER JOIN (left에 값이 다 있는것)
+SELECT DISTINCT(e.deptno), d.deptno, d.dname
+FROM dept d
+LEFT OUTER JOIN emp e
+ON d.deptno = e.deptno;
+
+--ex4) LIGHT OUTER JOIN(right쪽에 값이 다 있는것)
+SELECT DISTINCT(e.deptno), d.deptno, d.dname
+FROM emp e
+RIGHT OUTER JOIN dept d
+ON e.deptno = d.deptno;
+
+--ex5) FULL OUTER JOIN
+SELECT DISTINCT(e.deptno), d.deptno, d.dname
+FROM emp e
+FULL OUTER JOIN dept d
+ON e.deptno = d.deptno;
+
+
+--Commit과 Rollback
+--DCL(TCL) : 트랜잭션
 
