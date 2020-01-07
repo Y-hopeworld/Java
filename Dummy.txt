@@ -374,7 +374,12 @@ COMMIT;
 SELECT * FROM emp;
 
 --Join 
-
+--1. 둘 이상의 테이블을 연결하여 하나의 가상테이블을 마드는 것
+--2. 보통 두 ㄹ이상의 행들의 공통된 값 FK 및 FK값을 사용하여 조인한다
+--3. 두개의 테이블을 SELECT 문장안에 조인하려면 적어도 하나의 컬럼이 그 두 테이블 사이에서 공유 되어야한다
+ -- 두개 이상의 테이블을 합치는 것
+-- 두 개의 테이블에서 동일한 컬럼이 있어야함
+-- 컬럼 안에 값이 같을 때 
 --사원내용
 SELECT * FROM emp; -- detpno : FK키
 --부서내용
@@ -398,10 +403,11 @@ SELECT emp.empno, emp.ename as 사원이름, dept.dname
 FROM dept, emp 
 WHERE dept.deptno = emp.deptno;
 
---ALIAS
+--ALIAS : 테이블 이름을 간단하게 만들어줌
 SELECT e.empno, e.ename as 사원이름, d.dname
 FROM dept d, emp e
 WHERE d.deptno = e.deptno;
+-- dept의 deptno 와 emp의 deptno 똑같은 값을 찾아라
 
 --2.Inner Join == Equi Join
 --ex) dept테이블과 emp 테이블을 Inner조인
@@ -415,10 +421,17 @@ ON d.deptno = e.deptno;
 -- 3. Natural Join == Equi Join 
 --ex) dept테이블과 emp 테이블을 Natural조인
 -- 동일한 컬럼을 내부적으로 모두 조인, ON절(동등조건)이 생략가능
+--  장점: 자동으로 같은 값을 찾아서 묶어줌
+--  단점: 같은 컬럼이 두개 이상이 되면 두개 다 묶어버림
+-- Natural과 Using은 같이 사용이 불가능
+-- Natural Join에서 Using절을 사용 하고 싶으면 Inner Join으로 변경하고 사용해야함
+-- Natural Join을 Inner Join으로 변강하는 방법은 Natural만 지우면 된다
 SELECT e.empno , e.ename , d.dname
 FROM dept d
 NATURAL JOIN emp e;
 --Using(deptno); 동일한 이름을 가지는 컬럼은 모두 조인 됨으로 Using을 사용하면 컬럼을 선택해서 조인 가능
+-- Natural Join의 WHERE의 역할을 해줌
+-- 
 
 --4. Non-Equi Join
 -- 테이블의 어떤 컬럼도 Join 할 테이블의 컬럼과 일치하지 않을 때
@@ -434,17 +447,21 @@ FROM emp e, salgrade s
 WHERE e.sal
 BETWEEN s.losal
 AND s.hisal;
+-- e.sal이 s.losal
+
 
 --5. Self Join
 -- Equi Join과 같으나 하나의 테이블에서 조인이 일어난다는 것이 다르다
 -- 같은 테이블에 대해 두개의 alias를 사용하여, FROM 절에 두개의 테이블 사용하는 것처럼 조인한다.
 -- ex)사원의 매니저이름을 조회하는 Self Join
+-- 나랑 나를 자가 복제 해서 사용
+
 SELECT e.ename, a.ename as Manager
 FROM emp e, emp a
 WHERE e.empno = a.mgr;
 SELECT * FROM emp;
 
--- ※.Cartesian Product
+-- 6. Cross join =Cartesian Product
 -- 컬럼을 곱해서 모든 경우의 수를 띄워주는 것
 -- 검색하고자했던 데이터뿐 아니라 조인에 사용된 테이블들의 모든 데이터가 반환되는 현상
 -- Cartesian Product 는 조인 조건을 정의하지 않은 경우 발생
@@ -492,6 +509,94 @@ FULL OUTER JOIN dept d
 ON e.deptno = d.deptno;
 
 
+SELECT * FROM DUAL;
+
 --Commit과 Rollback
 --DCL(TCL) : 트랜잭션
+--SAVEPOINT a
+--ROLLBACK TO a;
+
+
+
+
+
+
+--Oracle 내장함수
+
+-- : DUAL 테이블 
+--   1.Oracle 에서 자체적으로 제공하는 테이블
+--   2.간단하게 함수를 이용해서 계산 결과값을 확인 할 떄 사용 
+--   3.SYS사용자(신급권한)가 소유하는 Oracle의 표준 테이블
+--   4.SYS사용자가 소유하지만 어느 사용자든 접근가능
+--   5.오직 한행, 한컬럼만 담고 있는 dummy테이블   
+-- : Dual 테이블 사용용도
+--  1. 사용자가 함수(계산)를 실행할 떄 임시로 사용하는데 적합
+--  2. 함수에 대한 쓰임을 알고 싶을 떄 특정테이블 생성없이 dual을 사용하면 return 받을 수 있음
+
+--  ex)현재시간 출력
+SELECT SYSDATE FROM DUAL;
+
+SELECT 
+-- ex) 시퀀스 현재번호 출력
+SELECT seq_sale.CURRVAL FROM DUAL;
+
+-- ex) 시퀀스 다음번호 출력
+SELECT seq_sale.NEXTVAL FROM DUAL;
+
+--숫자형 함수
+--1. ABS 절대값을 반환하는 함수
+SELECT ABS(-1.234) absolute FROM DUAL;
+
+-- 2.CEIL 올림값을 반환하는 함수
+SELECT CEIL(10.1234) FROM DUAL;
+
+--3. FLOOR 버림값을 반환하는 함수
+SELECT FLOOR(10.1234) FROM DUAL;
+
+--4.MOD 함수를 m을 n으로 나눈 나머지 반환, n이 0일 경우 m을 반환
+SELECT MOD(9, 4) FROM DUAL;
+
+--5. ROUND n값의 반올림을 하는 함수로 m은 소숫점 아래 자릿수를 나타냄
+SELECT ROUND(192.153,1) FROM DUAL;
+SELECT ROUND(192.153,-1) FROM DUAL;
+
+--6.TRUNC n값을 절삭하는 함수 m은 소숫점 아래 자릿수를 나타냄
+SELECT TRUNC(7.5997,2) FROM DUAL;
+SELECT TRUNC(789.5597, -2) FROM DUAL;
+
+--문자열 함수
+--1. CONCAT 두 문자를 결합, '||' ← LIKE절 
+-- CONCAT :자바에 있음
+--'%' || keyword || '%' → '%keyword%'
+SELECT CONCAT('www.','oracle.')|| 'com' FROM DUAL;
+
+--2.INITCAP(char), LOWER(char), UPPER(char)
+-- INITCAP : 주어진 문자열의 첫번째 문자를 대문자로 변환
+-- LOWER : 주어진 물자열을 소문자로 변환
+-- UPPER :  주어진 문자열을 대문자로 변환
+SELECT INITCAP('oracle') name FROM DUAL
+SELECT LOWER('oracle') name FROM DUAL;
+SELECT UPPER('oracle') name FROM DUAL;
+
+--3. LENGTH(char), LENGTHB(char)
+-- 문자열의 길이를 반환
+SELECT LENGTH ('오라클자바') len FROM DUAL; -- 결과: 5(순수 글자수)
+SELECT LENGTHB('오라클자바') len FROM DUAL; -- 결과: 15(글자바이트수,한글자당 3byte)
+
+--4. REPLACE(char1,str1,str2)
+--문자열의 특정문자를 다른 문자로 변환
+SELECT REPLACE('오라클자바','오라클','파이썬') FROM DUAL;
+
+--5. INSTR(char1, str1, m, n)
+--문자열이 포함되어 있는지 조사하여 문자열의 위치를 반환, ㅁ분자열이 발견되지 않으면 0 반환
+--char1 : 지정문자 str1 : 검색문자 , m: 시작위치 , n:검색순위
+SELECT INSTR('CORPORATE FLOOR','OK') FROM DUAL;
+SELECT INSTR('CORPORATE FLOOR','OR') FROM DUAL;
+SELECT INSTR('CORPORATE FLOOR','OR', 3, 2) idx FROM DUAL;
+--                                3은 글자의 세번째부터 검색을 시작, OR 이라는 단어를 검색하는데, OR을 검색시 2번째로 검색되는 것
+
+--6. TRIM
+-- 특정한 문자를 제거, 제거할 문자를 입력하지 않으면 기본적으로 공백이 제거
+-- 좌우공백 제거하는 용도로 많이 쓰임
+SELECT TRIM('        오라클자바  ') FROM DUAL;
 
