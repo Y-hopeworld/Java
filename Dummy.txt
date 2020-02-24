@@ -702,3 +702,30 @@ CREATE SEQUENCE seq_movie
     NOCYCLE;
 
 SELECT * FROM tbl_movie;
+
+--회원테이블
+DROP TABLE tbl_member;
+CREATE TABLE tbl_member(
+    id VARCHAR2(100)PRIMARY KEY,
+    pw VARCHAR2(50) NOT NULL,
+    name VARCHAR2(100) NOT NULL,
+    phone VARCHAR2(50) NOT NULL,
+    email VARCHAR2(100) NOT NULL,
+    postcode VARCHAR2(30) NOT NULL,
+    addr1 VARCHAR2(300) NOT NULL,
+    addr2 VARCHAR2(300) NOT NULL,
+    useon VARCHAR2(20) NOT NULL,
+    primaryon VARCHAR(20) NOT NULL,
+    locon VARCHAR2(20) DEFAULT 'false',
+    eventon VARCHAR2(20) DEFAULT 'false',
+    useyn CHAR(1) DEFAULT 'y',
+    regdate DATE DEFAULT SYSDATE
+);
+
+INSERT INTO tbl_member(id,pw,name,phone,email,postcode,addr1,addr2,useon,primaryon)
+VALUES('admin','1234','관리자','01012345678','admin@gmail.com','12345','광주광역시','광산구','true','true');
+INSERT INTO tbl_member(id,pw,name,phone,email,postcode,addr1,addr2,useon,primaryon)
+VALUES('hopelove','0218','정호석','01020130613','jhope@gmail.com','0221','광주광역시','광산구','true','true');
+
+SELECT * FROM tbl_member;
+COMMIT;
