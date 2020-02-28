@@ -703,6 +703,92 @@ CREATE SEQUENCE seq_movie
 
 SELECT * FROM tbl_movie;
 
+--상품 테이블
+DROP TABLE tbl_pdt;
+CREATE TABLE tbl_pdt(
+    pno NUMBER PRIMARY KEY,
+    pname VARCHAR2(500) NOT NULL,
+    ptype VARCHAR2(200) NOT NULL,
+    pmemo VARCHAR2(1000),
+    price NUMBER DEFAULT 0,
+    sale_price NUMBER DEFAULT 0,
+    avail_cnt NUMBER DEFAULT 0,
+    sale_cnt NUMBER DEFAULT 0,
+    color1 VARCHAR2(100) DEFAULT 'empty',
+    color2 VARCHAR2(100) DEFAULT 'empty',
+    color3 VARCHAR2(100) DEFAULT 'empty',
+    p_img VARCHAR2(300),
+    regdate DATE DEFAULT SYSDATE
+);
+
+DROP SEQUENCE seq_pdt;
+CREATE SEQUENCE seq_pdt
+    START WITH 1
+    INCREMENT BY 1
+    NOCYCLE;
+    
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'PINK CARDICAN','outer','pink ivory',98000,10,31,'#FFEEE7','#E9CBD1','empty','items5.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'CASHMERE COAT','outer','ivorycheck',320000,20,43,'#FAEBD7','#B89563','empty','items6.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'CASHMERE ONE-PIECE','dress','pink sora black',264000,10,52,'#FAEBD7','#E68282','#000','items2.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'TRENCH COAT','outer','ivory gray black',148000,13,28,'#FAEBD7','#b4b4b4','#000','items1.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'MINI CHECK CARDIGAN','outer','blue black',86000,21,18,'#00008b','#191970','#000','items3.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'CHINA COLLAR BLOUSE','top','ivory',77000,8,13,'#FFF','#000','empty','items8.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'WOOL COAT','outer','gray black',198000,7,22,'#c8c8c8','#282828','#000','items7.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'TWEED MINI DRESS','dress','black',137000,6,53,'#000','empty','empty','items11.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'STITCHED PANTS','bottom','navy balck',80000,9,26,'#000080','#080610','empty','items10.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'CASHMERE COAT','outer','Ivory Pink',268000,21,61,'#FAF0E6','#906D38','#000','items9.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'BUCKET HAT','acc','white navy balck',36000,11,35,'#FFF','#000080','#000','item13.PNG');
+INSERT INTO tbl_pdt(pno,pname,ptype,pmemo,price,avail_cnt,sale_cnt,color1,color2,color3,p_img)
+VALUES(seq_pdt.NEXTVAL,'MINI BAG','bag','navy black',53000,5,73,'#FFF','#000080','#000','item12.PNG');
+
+UPDATE tbl_pdt
+   SET sale_price = price - (price * 0.05)
+ 
+COMMIT; 
+
+ 
+SELECT * FROM tbl_pdt; 
+
+--rownum을 컬럼으로 만들기
+SELECT rownum rnum, best.*
+FROM ( SELECT * FROM tbl_pdt
+        ORDER BY sale_cnt DESC
+        ) best;
+
+-- BEST 상품 1~5위까지 출력
+-- 재고가 0보다 큰 애들을 판매 수량을 내림차순(판매수량이 높은순)으로 출력해주세요(BEST 상품이 재고가 없으면 판매 할 수 없기 때문에 재고량이 있는지 없는지 판별)
+-- 
+SELECT *
+FROM (SELECT rownum rnum, best.*
+      FROM ( SELECT * FROM tbl_pdt
+            WHERE avail_cnt > 0
+            ORDER BY sale_cnt DESC
+         ) best
+     )
+WHERE rnum between 1 and 5;
+
+--모든 상품들중 BEST 상품 순으로 출력 
+SELECT * FROM tbl_pdt
+ORDER BY sale_cnt DESC;
+
+--컬럼추가
+ALTER TABLE tbl_pdt
+    ADD(sale NUMBER DEFAULT 0);
+
+SELECT * FROM tbl_pdt;    
+
+SELECT 8 FROM tbl_member;
 
 --회원테이블
 DROP TABLE tbl_member;
@@ -735,4 +821,3 @@ WHERE id = 'lemon';
 
 SELECT * FROM tbl_member;
 COMMIT;
-
